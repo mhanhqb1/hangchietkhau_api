@@ -16,25 +16,35 @@ class Model_Product extends Model_Abstract {
     protected static $_properties = array(
         'id',
         'name',
-        'url',
+        'slug',
+        'qty',
+        'admin_price',
+        'admin_income',
+        'wholesale_price',
+        'discount',
+        'discount_unit',
+        'root_price',
         'price',
-        'discount_price',
+        'wholesale_income',
+        'supplier_id',
+        'source_url',
+        'source_name',
         'image',
-        'thumb_image',
-        'cate_id',
+        'image_2',
+        'image_3',
+        'image_4',
+        'image_5',
+        'attributes',
         'description',
         'detail',
-        'seo_title',
-        'seo_description',
         'seo_keyword',
-        'seo_image',
-        'created',
-        'updated',
-        'disable',
+        'seo_description',
+        'total_view',
+        'total_sale',
         'is_hot',
-        'image2',
-        'image3',
-        'image4'
+        'is_disable',
+        'created',
+        'updated'
     );
 
     protected static $_observers = array(
@@ -50,6 +60,11 @@ class Model_Product extends Model_Abstract {
 
     /** @var array $_table_name name of table */
     protected static $_table_name = 'products';
+    
+    public static $_discount_unit = array(
+        'percent' => 0,
+        'money' => 1
+    );
 
     /**
      * Add update info
@@ -64,7 +79,15 @@ class Model_Product extends Model_Abstract {
         $self = array();
         $isNew = false;
         $time = time();
-        
+        $adminPrice = !empty($param['admin_price']) ? $param['admin_price'] : 0;
+        $wholesalePrice = !empty($param['wholesale_price']) ? $param['wholesale_price'] : 0;
+        $adminIncome = $wholesalePrice - $adminPrice;
+        $discount = !empty($param['discount']) ? $param['discount'] : 0;
+        $discountUnit = !empty($param['discount_unit']) ? $param['discount_unit'] : 0;
+        $rootPrice = !empty($param['root_price']) ? $param['root_price'] : 0;
+        $discountPrice = $discountUnit == self::$_discount_unit['percent'] ? $rootPrice*$discount/100 : $discount;
+        $price = $rootPrice - $discountPrice;
+        $wholesaleIncome = $price - $wholesalePrice;
         // Check if exist User
         if (!empty($param['id'])) {
             $self = self::find($param['id']);
@@ -85,51 +108,66 @@ class Model_Product extends Model_Abstract {
                 return false;
             }
             $param['image'] = !empty($uploadResult['body']['image']) ? $uploadResult['body']['image'] : '';
-            $param['image2'] = !empty($uploadResult['body']['image2']) ? $uploadResult['body']['image2'] : '';
-            $param['image3'] = !empty($uploadResult['body']['image3']) ? $uploadResult['body']['image3'] : '';
-            $param['image4'] = !empty($uploadResult['body']['image4']) ? $uploadResult['body']['image4'] : '';
+            $param['image_2'] = !empty($uploadResult['body']['image_2']) ? $uploadResult['body']['image_2'] : '';
+            $param['image_3'] = !empty($uploadResult['body']['image_3']) ? $uploadResult['body']['image_3'] : '';
+            $param['image_4'] = !empty($uploadResult['body']['image_4']) ? $uploadResult['body']['image_4'] : '';
+            $param['image_5'] = !empty($uploadResult['body']['image_5']) ? $uploadResult['body']['image_5'] : '';
         }
         
         // Set data
+        $self->set('admin_price', $adminPrice);
+        $self->set('admin_income', $adminIncome);
+        $self->set('wholesale_price', $wholesalePrice);
+        $self->set('wholesale_income', $wholesaleIncome);
+        $self->set('discount', $discount);
+        $self->set('discount_unit', $discountUnit);
+        $self->set('root_price', $rootPrice);
+        $self->set('price', $price);
         if (!empty($param['name'])) {
             $self->set('name', $param['name']);
-            $self->set('url', \Lib\Str::convertURL($param['name']));
+            $self->set('slug', \Lib\Str::convertURL($param['name']));
         }
-        if (!empty($param['price'])) {
-            $self->set('price', $param['price']);
+        if (isset($param['qty'])){
+            $self->set('qty', $param['qty']);
         }
-        if (!empty($param['thumb_image'])) {
-            $self->set('thumb_image', $param['thumb_image']);
+        if (isset($param['supplier_id'])) {
+            $self->set('supplier_id', $param['supplier_id']);
         }
-        if (!empty($param['cate_id'])) {
-            $self->set('cate_id', $param['cate_id']);
+        if (isset($param['source_url'])) {
+            $self->set('source_url', $param['source_url']);
         }
-        if (!empty($param['description'])) {
-            $self->set('description', $param['description']);
-        }
-        if (!empty($param['detail'])) {
-            $self->set('detail', $param['detail']);
+        if (isset($param['source_name'])) {
+            $self->set('source_name', $param['source_name']);
         }
         if (!empty($param['image'])) {
             $self->set('image', $param['image']);
         }
-        if (!empty($param['image2'])) {
-            $self->set('image2', $param['image2']);
+        if (!empty($param['image_2'])) {
+            $self->set('image_2', $param['image_2']);
         }
-        if (!empty($param['image3'])) {
-            $self->set('image3', $param['image3']);
+        if (!empty($param['image_3'])) {
+            $self->set('image_3', $param['image_3']);
         }
-        if (!empty($param['image4'])) {
-            $self->set('image4', $param['image4']);
+        if (!empty($param['image_4'])) {
+            $self->set('image_4', $param['image_4']);
         }
-        if (!empty($param['seo_keyword'])) {
+        if (!empty($param['image_5'])) {
+            $self->set('image_5', $param['image_5']);
+        }
+        if (isset($param['attributes'])) {
+            $self->set('attributes', $param['attributes']);
+        }
+        if (isset($param['description'])) {
+            $self->set('description', $param['description']);
+        }
+        if (isset($param['detail'])) {
+            $self->set('detail', $param['detail']);
+        }
+        if (isset($param['seo_keyword'])) {
             $self->set('seo_keyword', $param['seo_keyword']);
         }
-        if (!empty($param['seo_description'])) {
+        if (isset($param['seo_description'])) {
             $self->set('seo_description', $param['seo_description']);
-        }
-        if (isset($param['discount_price'])) {
-            $self->set('discount_price', $param['discount_price']);
         }
         if (isset($param['is_hot'])) {
             $self->set('is_hot', $param['is_hot']);
@@ -164,31 +202,19 @@ class Model_Product extends Model_Abstract {
         
         // Query
         $query = DB::select(
-                self::$_table_name.'.*',
-                array('cates.name', 'cate_name')
+                self::$_table_name.'.*'
             )
             ->from(self::$_table_name)
-            ->join('cates', 'left')
-            ->on('cates.id', '=', self::$_table_name.'.cate_id')
         ;
                         
         // Filter
         if (!empty($param['name'])) {
             $query->where(self::$_table_name.'.name', 'LIKE', "%{$param['name']}%");
         }
-        if (!empty($param['cate_id'])) {
-            if (!is_array($param['cate_id'])) {
-                $param['cate_id'] = explode(',', $param['cate_id']);
-            }
-            $query->where(self::$_table_name.'.cate_id', 'IN', $param['cate_id']);
-        }
-        if (!empty($param['is_discount'])) {
-            $query->where(self::$_table_name.'.discount_price', '>', 0);
-        }
         
         if (isset($param['disable']) && $param['disable'] != '') {
             $disable = !empty($param['disable']) ? 1 : 0;
-            $query->where(self::$_table_name.'.disable', $disable);
+            $query->where(self::$_table_name.'.is_disable', $disable);
         }
         
         // Pagination
@@ -216,31 +242,6 @@ class Model_Product extends Model_Abstract {
         // Get data
         $data = $query->execute()->as_array();
         $total = !empty($data) ? DB::count_last_query(self::$slave_db) : 0;
-        
-        $discountProducts = array();
-        if (!empty($param['get_discount_products'])) {
-            $discountProducts = self::get_all(array(
-                'sort' => 'discount_price-desc',
-                'page' => 1,
-                'limit' => 6,
-                'is_discount' => 1
-            ));
-        }
-        $newProducts = array();
-        if (!empty($param['get_new_products'])) {
-            $newProducts = self::get_all(array(
-                'sort' => 'id-desc',
-                'page' => 1,
-                'limit' => 6
-            ));
-        }
-        
-        return array(
-            'total' => $total,
-            'data' => $data,
-            'discount_products' => $discountProducts,
-            'new_products' => $newProducts
-        );
     }
     
     /**
@@ -256,14 +257,9 @@ class Model_Product extends Model_Abstract {
         $url = !empty($param['url']) ? $param['url'] : '';
         
         $query = DB::select(
-                self::$_table_name.'.*',
-                array('cates.name', 'cate_name'),
-                array('cates.url', 'cate_url')
+                self::$_table_name.'.*'
             )
             ->from(self::$_table_name)
-            ->join('cates', 'LEFT')
-            ->on('cates.id', '=', self::$_table_name.'.cate_id')
-            ->where(self::$_table_name.'.disable', 0)
         ;
         if (!empty($url)) {
             $query->where(self::$_table_name.'.url', $url);
@@ -316,7 +312,12 @@ class Model_Product extends Model_Abstract {
             $ids = explode(',', $ids);
         }
         foreach ($ids as $id) {
-            $self = self::del(array('id' => $id));
+//            $self = self::del(array('id' => $id));
+            $self = self::find($id);
+            if (!empty($self)) {
+                $self->set('is_disable', $disable);
+                $self->save();
+            }
         }
         return true;
     }
