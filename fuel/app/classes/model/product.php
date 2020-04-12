@@ -183,7 +183,7 @@ class Model_Product extends Model_Abstract {
                 $self->id = self::cached_object($self)->_original['id'];
             }
             // Reset post tags
-            $delete = self::deleteRow('cates', array(
+            $delete = self::deleteRow('product_cates', array(
                 'product_id' => $self->id
             ));
             if (!empty($param['cate_id'])) {
@@ -255,6 +255,11 @@ class Model_Product extends Model_Abstract {
         // Get data
         $data = $query->execute()->as_array();
         $total = !empty($data) ? DB::count_last_query(self::$slave_db) : 0;
+        
+        return array(
+            'data' => $data,
+            'total' => $total
+        );
     }
     
     /**
@@ -284,28 +289,20 @@ class Model_Product extends Model_Abstract {
             self::errorNotExist('product_id');
             return false;
         }
-        if (!empty($param['get_new_products'])) {
-            $data['new_products'] = self::get_all(array(
-                'sort' => 'created-desc',
-                'page' => 1,
-                'limit' => 6
-            ));
+        $cateIds = DB::select(
+                'product_cates.cate_id'
+            )
+            ->from('product_cates')
+            ->where('product_id', $data['id'])
+            ->execute()
+            ->as_array();
+        $productCates = array();
+        if (!empty($cateIds)) {
+            foreach ($cateIds as $t) {
+                $productCates[] = $t['cate_id'];
+            }
         }
-        if (!empty($param['get_discount_products'])) {
-            $data['discount_products'] = self::get_all(array(
-                'sort' => 'discount_price-desc',
-                'page' => 1,
-                'limit' => 6,
-                'is_discount' => 1
-            ));
-        }
-        if (!empty($param['get_related_products'])) {
-            $data['related_products'] = self::get_all(array(
-                'sort' => 'id-desc',
-                'page' => 1,
-                'limit' => 12
-            ));
-        }
+        $data['cate_id'] = $productCates;
         
         return $data;
     }

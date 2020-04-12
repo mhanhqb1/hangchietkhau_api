@@ -238,7 +238,6 @@ class Model_Cate extends Model_Abstract {
                 self::$_table_name.'.*'
             )
             ->from(self::$_table_name)
-            ->where(self::$_table_name.'.is_disable', 0)
         ;
                         
         // Filter
