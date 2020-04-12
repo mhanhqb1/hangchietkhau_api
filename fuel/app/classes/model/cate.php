@@ -16,14 +16,12 @@ class Model_Cate extends Model_Abstract {
     protected static $_properties = array(
         'id',
         'name',
-        'url',
+        'slug',
         'parent_id',
         'position',
-        'is_homepage',
-        'type',
         'created',
         'updated',
-        'disable'
+        'is_disable'
     );
 
     protected static $_observers = array(
@@ -69,19 +67,13 @@ class Model_Cate extends Model_Abstract {
         // Set data
         if (!empty($param['name'])) {
             $self->set('name', $param['name']);
-            $self->set('url', \Lib\Str::convertURL($param['name']));
+            $self->set('slug', \Lib\Str::convertURL($param['name']));
         }
         if (!empty($param['parent_id'])) {
             $self->set('parent_id', $param['parent_id']);
         }
         if (!empty($param['position'])) {
             $self->set('position', $param['position']);
-        }
-        if (!empty($param['is_homepage'])) {
-            $self->set('is_homepage', $param['is_homepage']);
-        }
-        if (!empty($param['type'])) {
-            $self->set('type', $param['type']);
         }
         $self->set('updated', $time);
         if ($isNew) {
@@ -122,10 +114,7 @@ class Model_Cate extends Model_Abstract {
         if (!empty($param['name'])) {
             $query->where(self::$_table_name.'.name', 'LIKE', "%{$param['name']}%");
         }
-        if (!empty($param['type'])) {
-            $query->where(self::$_table_name.'.type', $param['type']);
-        }
-        if (isset($param['parent_id']) && $param['parent_id'] != '') {
+        if (isset($param['parent_id'])) {
             if (empty($param['parent_id'])) {
                 $query->where_open();
                 $query->where(self::$_table_name.'.parent_id', 'IS', null);
@@ -138,7 +127,7 @@ class Model_Cate extends Model_Abstract {
         
         if (isset($param['disable']) && $param['disable'] != '') {
             $disable = !empty($param['disable']) ? 1 : 0;
-            $query->where(self::$_table_name.'.disable', $disable);
+            $query->where(self::$_table_name.'.is_disable', $disable);
         }
         
         // Pagination
@@ -249,7 +238,7 @@ class Model_Cate extends Model_Abstract {
                 self::$_table_name.'.*'
             )
             ->from(self::$_table_name)
-            ->where(self::$_table_name.'.disable', 0)
+            ->where(self::$_table_name.'.is_disable', 0)
         ;
                         
         // Filter
@@ -267,9 +256,6 @@ class Model_Cate extends Model_Abstract {
         }
         if (!empty($param['not_id'])) {
             $query->where(self::$_table_name.'.id', '!=', $param['not_id']);
-        }
-        if (!empty($param['type'])) {
-            $query->where(self::$_table_name.'.type', $param['type']);
         }
         if (isset($param['parent_id'])) {
             if (empty($param['parent_id'])) {

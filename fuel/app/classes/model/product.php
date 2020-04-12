@@ -182,6 +182,19 @@ class Model_Product extends Model_Abstract {
             if (empty($self->id)) {
                 $self->id = self::cached_object($self)->_original['id'];
             }
+            // Reset post tags
+            $delete = self::deleteRow('cates', array(
+                'product_id' => $self->id
+            ));
+            if (!empty($param['cate_id'])) {
+                $cateIds = explode(',', $param['cate_id']);
+                foreach ($cateIds as $c) {
+                    Model_Product_Cate::add_update(array(
+                        'cate_id' => trim($c),
+                        'product_id' => $self->id
+                    ));
+                }
+            }
             return $self->id;
         }
         
