@@ -85,4 +85,31 @@ class Model_User extends Model_Abstract {
         
         return false;
     }
+    
+    /**
+     * Login
+     *
+     * @author AnhMH
+     * @param array $param Input data
+     * @return int|bool User ID or false if error
+     */
+    public static function login($param)
+    {
+        // Init
+        $param['password'] = Util::encodePassword($param['password'], $param['email']);
+        
+        // Check if duplicate Email
+        $user = self::find('first', array(
+            'where' => array(
+                'email' => $param['email'],
+                'password' => $param['password']
+            )
+        ));
+        if (empty($user)) {
+            self::errorNotExist('email');
+            return false;
+        }
+        
+        return $user;
+    }
 }

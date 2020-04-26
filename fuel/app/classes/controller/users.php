@@ -17,4 +17,11 @@ class Controller_Users extends \Controller_App {
     public function action_register() {
         return \Bus\Users_Register::getInstance()->execute();
     }
+    
+    /**
+     * Login
+     */
+    public function action_login() {
+        return \Bus\Users_Login::getInstance()->execute();
+    }
 }
