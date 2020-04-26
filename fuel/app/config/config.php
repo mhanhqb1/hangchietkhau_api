@@ -337,7 +337,9 @@ return array(
             'posts/detail',
             'orders/addupdate',
             'contacts/addupdate',
-            'pages/detail'
+            'pages/detail',
+            'users/login',
+            'users/register'
         ),
         'admin_authorize_url' => array(),
         'unauthorize_basic_token_url' => array(
