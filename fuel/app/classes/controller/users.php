@@ -24,4 +24,11 @@ class Controller_Users extends \Controller_App {
     public function action_login() {
         return \Bus\Users_Login::getInstance()->execute();
     }
+    
+    /**
+     * Products
+     */
+    public function action_products() {
+        return \Bus\Users_Products::getInstance()->execute();
+    }
 }

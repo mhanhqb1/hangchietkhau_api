@@ -339,7 +339,8 @@ return array(
             'contacts/addupdate',
             'pages/detail',
             'users/login',
-            'users/register'
+            'users/register',
+            'users/products'
         ),
         'admin_authorize_url' => array(),
         'unauthorize_basic_token_url' => array(

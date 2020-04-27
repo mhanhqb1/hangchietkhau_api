@@ -263,6 +263,70 @@ class Model_Product extends Model_Abstract {
     }
     
     /**
+     * Get list
+     *
+     * @author AnhMH
+     * @param array $param Input data
+     * @return array|bool
+     */
+    public static function get_user_products($param)
+    {
+        // Init
+        $adminId = !empty($param['admin_id']) ? $param['admin_id'] : '';
+        
+        // Query
+        $query = DB::select(
+                self::$_table_name.'.*',
+                DB::expr("GROUP_CONCAT(cates.name SEPARATOR ', ') as cate_name")
+            )
+            ->from(self::$_table_name)
+            ->join('product_cates', 'LEFT')
+            ->on(self::$_table_name.'.id', '=', 'product_cates.product_id')
+            ->join('cates', 'LEFT')
+            ->on('cates.id', '=', 'product_cates.cate_id')  
+        ;
+                        
+        // Filter
+        if (!empty($param['name'])) {
+            $query->where(self::$_table_name.'.name', 'LIKE', "%{$param['name']}%");
+        }
+        
+        if (isset($param['disable']) && $param['disable'] != '') {
+            $disable = !empty($param['disable']) ? 1 : 0;
+            $query->where(self::$_table_name.'.is_disable', $disable);
+        }
+        
+        // Pagination
+        if (!empty($param['page']) && $param['limit']) {
+            $offset = ($param['page'] - 1) * $param['limit'];
+            $query->limit($param['limit'])->offset($offset);
+        }
+        
+        // Sort
+        if (!empty($param['sort'])) {
+            if (!self::checkSort($param['sort'])) {
+                self::errorParamInvalid('sort');
+                return false;
+            }
+
+            $sortExplode = explode('-', $param['sort']);
+            if ($sortExplode[0] == 'created') {
+                $sortExplode[0] = self::$_table_name . '.created';
+            }
+            $query->order_by($sortExplode[0], $sortExplode[1]);
+        } else {
+            $query->order_by(self::$_table_name . '.created', 'DESC');
+        }
+        
+        // Get data
+        $data = $query->execute()->as_array();
+        
+        return array(
+            'data' => $data
+        );
+    }
+    
+    /**
      * Get detail
      *
      * @author AnhMH
