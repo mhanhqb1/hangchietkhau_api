@@ -186,6 +186,7 @@ class Model_Product extends Model_Abstract {
         }
         $self->set('updated', $time);
         if ($isNew) {
+            $self->set('is_disable', 1);
             $self->set('created', $time);
         }
         
@@ -288,15 +289,15 @@ class Model_Product extends Model_Abstract {
         
         // Query
         $query = DB::select(
-                self::$_table_name.'.*',
-                DB::expr("GROUP_CONCAT(cates.name SEPARATOR ', ') as cate_name")
+                self::$_table_name.'.*'
+//                DB::expr("GROUP_CONCAT(cates.name SEPARATOR ', ') as cate_name")
             )
             ->from(self::$_table_name)
-            ->join('product_cates', 'LEFT')
-            ->on(self::$_table_name.'.id', '=', 'product_cates.product_id')
-            ->join('cates', 'LEFT')
-            ->on('cates.id', '=', 'product_cates.cate_id')  
-            ->where(self::$_table_name.'.is_disable', '!=', 1)
+//            ->join('product_cates', 'LEFT')
+//            ->on(self::$_table_name.'.id', '=', 'product_cates.product_id')
+//            ->join('cates', 'LEFT')
+//            ->on('cates.id', '=', 'product_cates.cate_id')  
+            ->where(self::$_table_name.'.is_disable', 0)
         ;
                         
         // Filter
