@@ -46,7 +46,8 @@ class Model_Product extends Model_Abstract {
         'created',
         'updated',
         'aff_url',
-        'aff_news_url'
+        'aff_news_url',
+        'source_id'
     );
 
     protected static $_observers = array(
@@ -180,6 +181,9 @@ class Model_Product extends Model_Abstract {
         if (isset($param['aff_news_url'])) {
             $self->set('aff_news_url', $param['aff_news_url']);
         }
+        if (isset($param['source_id'])) {
+            $self->set('source_id', $param['source_id']);
+        }
         $self->set('updated', $time);
         if ($isNew) {
             $self->set('created', $time);
@@ -292,16 +296,12 @@ class Model_Product extends Model_Abstract {
             ->on(self::$_table_name.'.id', '=', 'product_cates.product_id')
             ->join('cates', 'LEFT')
             ->on('cates.id', '=', 'product_cates.cate_id')  
+            ->where(self::$_table_name.'.is_disable', '!=', 1)
         ;
                         
         // Filter
         if (!empty($param['name'])) {
             $query->where(self::$_table_name.'.name', 'LIKE', "%{$param['name']}%");
-        }
-        
-        if (isset($param['disable']) && $param['disable'] != '') {
-            $disable = !empty($param['disable']) ? 1 : 0;
-            $query->where(self::$_table_name.'.is_disable', $disable);
         }
         
         // Pagination
