@@ -340,7 +340,8 @@ return array(
             'pages/detail',
             'users/login',
             'users/register',
-            'users/products'
+            'users/products',
+            'users/productdetail'
         ),
         'admin_authorize_url' => array(),
         'unauthorize_basic_token_url' => array(

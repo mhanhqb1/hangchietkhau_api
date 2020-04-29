@@ -44,7 +44,9 @@ class Model_Product extends Model_Abstract {
         'is_hot',
         'is_disable',
         'created',
-        'updated'
+        'updated',
+        'aff_url',
+        'aff_news_url'
     );
 
     protected static $_observers = array(
@@ -171,6 +173,12 @@ class Model_Product extends Model_Abstract {
         }
         if (isset($param['is_hot'])) {
             $self->set('is_hot', $param['is_hot']);
+        }
+        if (isset($param['aff_url'])) {
+            $self->set('aff_url', $param['aff_url']);
+        }
+        if (isset($param['aff_news_url'])) {
+            $self->set('aff_news_url', $param['aff_news_url']);
         }
         $self->set('updated', $time);
         if ($isNew) {
@@ -497,6 +505,33 @@ class Model_Product extends Model_Abstract {
         
         // Get data
         $data = $query->execute()->as_array();
+        
+        return $data;
+    }
+    
+    /**
+     * Get user product detail
+     *
+     * @author AnhMH
+     * @param array $param Input data
+     * @return array|bool
+     */
+    public static function get_user_detail($param)
+    {
+        $url = !empty($param['slug']) ? $param['slug'] : '';
+        
+        $query = DB::select(
+                self::$_table_name.'.*'
+            )
+            ->from(self::$_table_name)
+            ->where(self::$_table_name.'.slug', $url)
+        ;
+            
+        $data = $query->execute()->offsetGet(0);
+        if (empty($data)) {
+            self::errorNotExist('product_id');
+            return false;
+        }
         
         return $data;
     }
