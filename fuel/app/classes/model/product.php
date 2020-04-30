@@ -47,7 +47,7 @@ class Model_Product extends Model_Abstract {
         'updated',
         'aff_url',
         'aff_news_url',
-        'source_id'
+        'source_pid'
     );
 
     protected static $_observers = array(
@@ -181,8 +181,8 @@ class Model_Product extends Model_Abstract {
         if (isset($param['aff_news_url'])) {
             $self->set('aff_news_url', $param['aff_news_url']);
         }
-        if (isset($param['source_id'])) {
-            $self->set('source_id', $param['source_id']);
+        if (isset($param['source_pid'])) {
+            $self->set('source_pid', $param['source_pid']);
         }
         $self->set('updated', $time);
         if ($isNew) {
