@@ -1,6 +1,6 @@
 <?php
 $envConf = array(
-    'img_url' => 'https://img.tusachehon.com/',
+    'img_url' => 'https://img.hangchietkhau.com/',
     'send_email' => true,
     'test_email' => '', // will send to this email for testing 
     'api_check_security' => true,
