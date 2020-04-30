@@ -304,6 +304,12 @@ class Model_Product extends Model_Abstract {
         if (!empty($param['name'])) {
             $query->where(self::$_table_name.'.name', 'LIKE', "%{$param['name']}%");
         }
+        if (!empty($param['cate_id'])) {
+            $query->join('product_cates')
+                    ->on('product_cates.product_id', '=', self::$_table_name.'.id')
+                    ->where('product_cates.cate_id', $param['cate_id'])
+            ;
+        }
         
         // Pagination
         if (!empty($param['page']) && $param['limit']) {
@@ -330,8 +336,19 @@ class Model_Product extends Model_Abstract {
         // Get data
         $data = $query->execute()->as_array();
         
+        $cates = array();
+        if (!empty($param['get_cate'])) {
+            $cates = DB::select(
+                'cates.*'
+            )
+            ->from('cates')
+            ->execute()
+            ->as_array();
+        }
+        
         return array(
-            'data' => $data
+            'data' => $data,
+            'cates' => $cates
         );
     }
     
