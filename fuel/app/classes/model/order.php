@@ -108,6 +108,7 @@ class Model_Order extends Model_Abstract {
             return false;
         }
         
+        $self->set('created', $time);
         $self->set('status', $status);
         $self->set('source_oid', $sourceOID);
         $self->set('product_id', $product['id']);
@@ -126,5 +127,77 @@ class Model_Order extends Model_Abstract {
         
         $self->save();
         return true;
+    }
+    
+    /**
+     * Get list
+     *
+     * @author AnhMH
+     * @param array $param Input data
+     * @return array|bool
+     */
+    public static function get_user_orders($param)
+    {
+        // Query
+        $query = DB::select(
+                self::$_table_name.'.*',
+                array('products.name', 'product_name'),
+                array('products.image', 'product_image')
+            )
+            ->from(self::$_table_name)
+            ->join('products', 'LEFT')
+            ->on('products.id', '=', self::$_table_name.'.product_id')
+        ;
+                        
+        // Filter
+        if (!empty($param['user_id'])) {
+            $query->where(self::$_table_name.'.user_id', $param['user_id']);
+        }
+        if (!empty($param['product_id'])) {
+            $query->where(self::$_table_name.'.product_id', $param['product_id']);
+        }
+        if (isset($param['status']) && $param['status'] != '') {
+            $query->where(self::$_table_name.'.status', $param['status']);
+        }
+        
+        if (isset($param['disable']) && $param['disable'] != '') {
+            $disable = !empty($param['disable']) ? 1 : 0;
+            $query->where(self::$_table_name.'.is_disable', $disable);
+        }
+        
+        // Pagination
+        if (!empty($param['page']) && $param['limit']) {
+            $offset = ($param['page'] - 1) * $param['limit'];
+            $query->limit($param['limit'])->offset($offset);
+        }
+        
+        // Sort
+        if (!empty($param['sort'])) {
+            if (!self::checkSort($param['sort'])) {
+                self::errorParamInvalid('sort');
+                return false;
+            }
+
+            $sortExplode = explode('-', $param['sort']);
+            if ($sortExplode[0] == 'created') {
+                $sortExplode[0] = self::$_table_name . '.created';
+            }
+            $query->order_by($sortExplode[0], $sortExplode[1]);
+        } else {
+            $query->order_by(self::$_table_name . '.created', 'DESC');
+        }
+        
+        // Get data
+        $data = $query->execute()->as_array();
+        
+        $products = array();
+        if (!empty($param['get_products'])) {
+            $products = Model_Product::get_all(array());
+        }
+        
+        return array(
+            'data' => $data,
+            'products' => $products
+        );
     }
 }

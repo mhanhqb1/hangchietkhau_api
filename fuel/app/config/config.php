@@ -341,7 +341,8 @@ return array(
             'users/login',
             'users/register',
             'users/products',
-            'users/productdetail'
+            'users/productdetail',
+            'users/orders'
         ),
         'admin_authorize_url' => array(),
         'unauthorize_basic_token_url' => array(
