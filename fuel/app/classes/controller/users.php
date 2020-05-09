@@ -45,4 +45,11 @@ class Controller_Users extends \Controller_App {
     public function action_orders() {
         return \Bus\Users_Orders::getInstance()->execute();
     }
+    
+    /**
+     * Dashboard
+     */
+    public function action_dashboard() {
+        return \Bus\Users_Dashboard::getInstance()->execute();
+    }
 }
