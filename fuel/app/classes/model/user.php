@@ -112,4 +112,58 @@ class Model_User extends Model_Abstract {
         
         return $user;
     }
+    
+    /**
+     * Get dashboard info
+     *
+     * @author AnhMH
+     * @param array $param Input data
+     * @return int|bool User ID or false if error
+     */
+    public static function get_dashboard($param)
+    {
+        # Init
+        $data = array();
+        
+        # Get products
+        $products = Model_Product::get_all(array(
+            'page' => 1,
+            'limit' => 10,
+            'sort' => 'is_hot-desc'
+        ));
+        $data['products'] = $products;
+        
+        $productCount = DB::select('*')->from('products')->where('is_disable', 0)->execute();
+        $data['product_cnt'] = count($productCount);
+        
+        # Get orders
+        $wholesaleIncome = 0;
+        $orderCount = DB::select('*')->from('orders')->where('user_id', $param['user_id'])->execute()->as_array();
+        $data['order_cnt'] = count($orderCount);
+        if (!empty($orderCount)) {
+            foreach ($orderCount as $v) {
+                if ($v['status'] == 1) {
+                    $wholesaleIncome += $v['wholesale_income'];
+                }
+            }
+        }
+        $data['wholesale_income'] = $wholesaleIncome;
+        
+        $data['orders'] = DB::select(
+                'orders.*',
+                array('products.name', 'product_name'),
+                array('products.image', 'product_image')
+            )
+            ->from('orders')
+            ->join('products', 'LEFT')
+            ->on('products.id', '=', 'orders.product_id')
+            ->where('orders.user_id', $param['user_id'])
+            ->order_by('orders.created', 'DESC')
+            ->limit(10)
+            ->execute()
+            ->as_array()
+        ;
+        
+        return $data;
+    }
 }

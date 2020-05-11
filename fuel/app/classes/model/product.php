@@ -466,14 +466,10 @@ class Model_Product extends Model_Abstract {
         
         // Query
         $query = DB::select(
-                self::$_table_name.'.*',
-                array('cates.name', 'cate_name'),
-                array('cates.url', 'cate_url')
+                self::$_table_name.'.*'
             )
             ->from(self::$_table_name)
-            ->join('cates', 'LEFT')
-            ->on('cates.id', '=', self::$_table_name.'.cate_id')
-            ->where(self::$_table_name.'.disable', 0)
+            ->where(self::$_table_name.'.is_disable', 0)
         ;
                         
         // Filter
