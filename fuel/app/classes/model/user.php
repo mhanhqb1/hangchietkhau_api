@@ -25,7 +25,11 @@ class Model_User extends Model_Abstract {
         'created',
         'updated',
         'disable',
-        'is_actived'
+        'is_actived',
+        'bank_name',
+        'bank_branch',
+        'bank_account_name',
+        'bank_account_number'
     );
 
     protected static $_observers = array(
@@ -109,6 +113,10 @@ class Model_User extends Model_Abstract {
             self::errorNotExist('email');
             return false;
         }
+        $user['token'] = \Model_Authenticate::addupdate(array(
+            'user_id' => $user['id'],
+            'regist_type' => 'user'
+        ));
         
         return $user;
     }
@@ -165,5 +173,68 @@ class Model_User extends Model_Abstract {
         ;
         
         return $data;
+    }
+    
+    /**
+     * Update profile
+     *
+     * @author AnhMH
+     * @param array $param Input data
+     * @return array|bool Detail Admin or false if error
+     */
+    public static function update_profile($param)
+    {
+        $userId = !empty($param['login_user_id']) ? $param['login_user_id'] : '';
+        $user = self::find($userId);
+        if (empty($user)) {
+            self::errorNotExist('user_id', $userId);
+            return false;
+        }
+        
+        // Upload image
+        if (!empty($_FILES)) {
+            $uploadResult = \Lib\Util::uploadImage(); 
+            if ($uploadResult['status'] != 200) {
+                self::setError($uploadResult['error']);
+                return false;
+            }
+            $param['image'] = !empty($uploadResult['body']['image']) ? $uploadResult['body']['image'] : '';
+        }
+        
+        // Set data
+        if (!empty($param['name'])) {
+            $user->set('name', $param['name']);
+        }
+        if (!empty($param['phone'])) {
+            $user->set('phone', $param['phone']);
+        }
+        if (!empty($param['address'])) {
+            $user->set('address', $param['address']);
+        }
+        if (!empty($param['bank_name'])) {
+            $user->set('bank_name', $param['bank_name']);
+        }
+        if (!empty($param['bank_branch'])) {
+            $user->set('bank_branch', $param['bank_branch']);
+        }
+        if (!empty($param['bank_account_name'])) {
+            $user->set('bank_account_name', $param['bank_account_name']);
+        }
+        if (!empty($param['bank_account_number'])) {
+            $user->set('bank_account_number', $param['bank_account_number']);
+        }
+        if (!empty($param['new_pass'])) {
+            $user->set('password', Util::encodePassword($param['new_pass'], $user->get('email')));
+        }
+        
+        // Save data
+        if ($user->save()) {
+            $user['token'] = Model_Authenticate::addupdate(array(
+                'user_id' => $userId,
+                'regist_type' => 'user'
+            ));
+            return $user;
+        }
+        return false;
     }
 }

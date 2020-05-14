@@ -52,4 +52,11 @@ class Controller_Users extends \Controller_App {
     public function action_dashboard() {
         return \Bus\Users_Dashboard::getInstance()->execute();
     }
+    
+    /**
+     * Dashboard
+     */
+    public function action_updateprofile() {
+        return \Bus\Users_UpdateProfile::getInstance()->execute();
+    }
 }

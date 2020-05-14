@@ -343,7 +343,8 @@ return array(
             'users/products',
             'users/productdetail',
             'users/orders',
-            'users/dashboard'
+            'users/dashboard',
+            'users/updateprofile'
         ),
         'admin_authorize_url' => array(),
         'unauthorize_basic_token_url' => array(
