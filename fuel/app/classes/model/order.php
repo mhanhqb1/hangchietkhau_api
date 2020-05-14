@@ -56,7 +56,8 @@ class Model_Order extends Model_Abstract {
         'success' => 1,
         'pending' => 0,
         'cancel' => 3,
-        'duplicate' => 2
+        'duplicate' => 2,
+        'tmp_success' => 4
     );
     
     /**

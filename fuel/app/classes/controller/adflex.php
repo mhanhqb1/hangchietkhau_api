@@ -15,7 +15,7 @@ class Controller_Adflex extends \Controller_Rest {
      */
     public function action_success() {
         $params = $_GET;
-        $params['status'] = \Model_Order::$status['success'];
+        $params['status'] = \Model_Order::$status['tmp_success'];
         \Model_Order::add_from_flex($params);
         echo 'DONE';
         exit();
