@@ -59,4 +59,11 @@ class Controller_Users extends \Controller_App {
     public function action_updateprofile() {
         return \Bus\Users_UpdateProfile::getInstance()->execute();
     }
+    
+    /**
+     * Income
+     */
+    public function action_income() {
+        return \Bus\Users_Income::getInstance()->execute();
+    }
 }

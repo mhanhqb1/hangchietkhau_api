@@ -20,6 +20,16 @@ class Controller_Test extends \Controller_Rest {
     }
     
     /**
+     * Add user income
+     */
+    public function action_adduserincome() {
+        $data = \Model_User_Income::add_user_income();
+        echo '<pre>';
+        print_r($data);
+        exit;
+    }
+    
+    /**
      * Show PHP info
      */
     public function action_phpinfo() {

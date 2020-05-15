@@ -35,7 +35,9 @@ class Model_Order extends Model_Abstract {
         'created',
         'updated',
         'source_oid',
-        'source_payout'
+        'source_payout',
+        'is_pay',
+        'income_id'
     );
 
     protected static $_observers = array(
