@@ -513,6 +513,7 @@ class Model_Product extends Model_Abstract {
                 $sortExplode[0] = self::$_table_name . '.created';
             }
             $query->order_by($sortExplode[0], $sortExplode[1]);
+            $query->order_by(self::$_table_name . '.created', 'DESC');
         } else {
             $query->order_by(self::$_table_name . '.created', 'DESC');
         }

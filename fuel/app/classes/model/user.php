@@ -136,7 +136,7 @@ class Model_User extends Model_Abstract {
         # Get products
         $products = Model_Product::get_all(array(
             'page' => 1,
-            'limit' => 10,
+            'limit' => 5,
             'sort' => 'is_hot-desc'
         ));
         $data['products'] = $products;
@@ -146,16 +146,20 @@ class Model_User extends Model_Abstract {
         
         # Get orders
         $wholesaleIncome = 0;
+        $tmpIncome = 0;
         $orderCount = DB::select('*')->from('orders')->where('user_id', $param['user_id'])->execute()->as_array();
         $data['order_cnt'] = count($orderCount);
         if (!empty($orderCount)) {
             foreach ($orderCount as $v) {
-                if ($v['status'] == 1) {
+                if ($v['status'] == Model_Order::$status['success']) {
                     $wholesaleIncome += $v['wholesale_income'];
+                } else if ($v['status'] == Model_Order::$status['tmp_success']) {
+                    $tmpIncome += $v['wholesale_income'];
                 }
             }
         }
         $data['wholesale_income'] = $wholesaleIncome;
+        $data['wholesale_tmp_income'] = $tmpIncome;
         
         $data['orders'] = DB::select(
                 'orders.*',
@@ -167,7 +171,7 @@ class Model_User extends Model_Abstract {
             ->on('products.id', '=', 'orders.product_id')
             ->where('orders.user_id', $param['user_id'])
             ->order_by('orders.created', 'DESC')
-            ->limit(10)
+            ->limit(5)
             ->execute()
             ->as_array()
         ;
