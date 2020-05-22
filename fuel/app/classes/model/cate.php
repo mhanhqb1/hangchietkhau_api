@@ -21,7 +21,8 @@ class Model_Cate extends Model_Abstract {
         'position',
         'created',
         'updated',
-        'is_disable'
+        'is_disable',
+        'type'
     );
 
     protected static $_observers = array(
@@ -51,6 +52,7 @@ class Model_Cate extends Model_Abstract {
         $self = array();
         $isNew = false;
         $time = time();
+        $type = !empty($param['type']) ? $param['type'] : 0;
         
         // Check if exist User
         if (!empty($param['id'])) {
@@ -75,6 +77,7 @@ class Model_Cate extends Model_Abstract {
         if (!empty($param['position'])) {
             $self->set('position', $param['position']);
         }
+        $self->set('type', $type);
         $self->set('updated', $time);
         if ($isNew) {
             $self->set('created', $time);
@@ -113,6 +116,10 @@ class Model_Cate extends Model_Abstract {
         // Filter
         if (!empty($param['name'])) {
             $query->where(self::$_table_name.'.name', 'LIKE', "%{$param['name']}%");
+        }
+        if (isset($param['type']) && $param['type'] != '') {
+            $types = explode(',', $param['type']);
+            $query->where(self::$_table_name.'.type', 'IN', $types);
         }
         if (isset($param['parent_id'])) {
             if (empty($param['parent_id'])) {
@@ -255,6 +262,10 @@ class Model_Cate extends Model_Abstract {
         }
         if (!empty($param['not_id'])) {
             $query->where(self::$_table_name.'.id', '!=', $param['not_id']);
+        }
+        if (isset($param['type']) && $param['type'] != '') {
+            $param['type'] = explode(',', $param['type']);
+            $query->where(self::$_table_name.'.type', 'IN', $param['type']);
         }
         if (isset($param['parent_id'])) {
             if (empty($param['parent_id'])) {
