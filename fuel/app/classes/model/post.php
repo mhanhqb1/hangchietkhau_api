@@ -138,6 +138,9 @@ class Model_Post extends Model_Abstract {
         if (!empty($param['name'])) {
             $query->where(self::$_table_name.'.name', 'LIKE', "%{$param['name']}%");
         }
+        if (isset($param['type']) && $param['type'] != '') {
+            $query->where(self::$_table_name.'.type', $param['type']);
+        }
         if (!empty($param['cate_id'])) {
             if (!is_array($param['cate_id'])) {
                 $param['cate_id'] = explode(',', $param['cate_id']);
@@ -212,15 +215,8 @@ class Model_Post extends Model_Abstract {
         if (!empty($param['get_new_posts'])) {
             $data['new_posts'] = self::get_all(array(
                 'limit' => 4,
-                'page' => 1
-            ));
-        }
-        if (!empty($param['get_discount_products'])) {
-            $data['discount_products'] = Model_Product::get_all(array(
-                'is_discount' => 1,
                 'page' => 1,
-                'limit' => 6,
-                'sort' => 'discount_price-desc'
+                'type' => $data['type']
             ));
         }
         
