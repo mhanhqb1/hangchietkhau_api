@@ -176,6 +176,28 @@ class Model_User extends Model_Abstract {
             ->as_array()
         ;
         
+        $data['news'] = DB::select(
+                'posts.*'
+            )
+            ->from('posts')
+            ->where('type', 0)
+            ->order_by('orders.created', 'DESC')
+            ->limit(5)
+            ->execute()
+            ->as_array()
+        ;
+        
+        $data['tutorials'] = DB::select(
+                'posts.*'
+            )
+            ->from('posts')
+            ->where('type', 1)
+            ->order_by('orders.created', 'DESC')
+            ->limit(5)
+            ->execute()
+            ->as_array()
+        ;
+        
         return $data;
     }
     
