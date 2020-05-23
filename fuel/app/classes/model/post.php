@@ -201,7 +201,7 @@ class Model_Post extends Model_Abstract {
             ->join('cates', 'LEFT')
             ->on('cates.id', '=', self::$_table_name.'.cate_id')
         ;
-        if (!empty($url)) {
+        if (!empty($slug)) {
             $query->where(self::$_table_name.'.slug', $slug);
         } else {
             $query->where(self::$_table_name.'.id', $id);
