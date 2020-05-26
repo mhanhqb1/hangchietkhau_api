@@ -112,6 +112,7 @@ class Model_Order extends Model_Abstract {
         }
         
         $self->set('created', $time);
+        $self->set('updated', $time);
         $self->set('status', $status);
         $self->set('source_oid', $sourceOID);
         $self->set('product_id', $product['id']);

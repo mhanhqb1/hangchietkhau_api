@@ -237,6 +237,12 @@ class Model_Product extends Model_Abstract {
         if (!empty($param['name'])) {
             $query->where(self::$_table_name.'.name', 'LIKE', "%{$param['name']}%");
         }
+        if (!empty($param['cate_id'])) {
+            $query->join('product_cates')
+                    ->on('product_cates.product_id', '=', self::$_table_name.'.id')
+                    ->where('product_cates.cate_id', $param['cate_id'])
+            ;
+        }
         
         if (isset($param['disable']) && $param['disable'] != '') {
             $disable = !empty($param['disable']) ? 1 : 0;
