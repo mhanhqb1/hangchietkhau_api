@@ -142,6 +142,7 @@ class Model_Order extends Model_Abstract {
      */
     public static function get_user_orders($param)
     {
+        $userId = !empty($param['login_user_id']) ? $param['login_user_id'] : 0;
         // Query
         $query = DB::select(
                 self::$_table_name.'.*',
@@ -154,9 +155,7 @@ class Model_Order extends Model_Abstract {
         ;
                         
         // Filter
-        if (!empty($param['user_id'])) {
-            $query->where(self::$_table_name.'.user_id', $param['user_id']);
-        }
+        $query->where(self::$_table_name.'.user_id', $userId);
         if (!empty($param['product_id'])) {
             $query->where(self::$_table_name.'.product_id', $param['product_id']);
         }

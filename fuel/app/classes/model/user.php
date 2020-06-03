@@ -136,6 +136,7 @@ class Model_User extends Model_Abstract {
     {
         # Init
         $data = array();
+        $userId = !empty($param['login_user_id']) ? $param['login_user_id'] : 0;
         
         # Get products
         $products = Model_Product::get_all(array(
@@ -151,7 +152,7 @@ class Model_User extends Model_Abstract {
         # Get orders
         $wholesaleIncome = 0;
         $tmpIncome = 0;
-        $orderCount = DB::select('*')->from('orders')->where('user_id', $param['user_id'])->execute()->as_array();
+        $orderCount = DB::select('*')->from('orders')->where('user_id', $userId)->execute()->as_array();
         $data['order_cnt'] = count($orderCount);
         if (!empty($orderCount)) {
             foreach ($orderCount as $v) {
@@ -173,7 +174,7 @@ class Model_User extends Model_Abstract {
             ->from('orders')
             ->join('products', 'LEFT')
             ->on('products.id', '=', 'orders.product_id')
-            ->where('orders.user_id', $param['user_id'])
+            ->where('orders.user_id', $userId)
             ->order_by('orders.created', 'DESC')
             ->limit(5)
             ->execute()
