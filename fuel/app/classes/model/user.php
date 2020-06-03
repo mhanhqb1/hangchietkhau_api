@@ -84,6 +84,10 @@ class Model_User extends Model_Abstract {
             if (empty($self->id)) {
                 $self->id = self::cached_object($self)->_original['id'];
             }
+            $self['token'] = \Model_Authenticate::addupdate(array(
+                'user_id' => $self->id,
+                'regist_type' => 'user'
+            ));
             return $self;
         }
         
