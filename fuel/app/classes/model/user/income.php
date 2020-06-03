@@ -93,6 +93,7 @@ class Model_User_Income extends Model_Abstract {
     {
         # Init
         $data = array();
+        $minIncome = 500000;
         
         # Get orders
         $orders = Model_Order::find('all', array(
@@ -117,6 +118,9 @@ class Model_User_Income extends Model_Abstract {
             
             # Add income
             foreach ($data as $k => $v) {
+                if ($v['income'] < $minIncome) {
+                    continue;
+                }
                 $incomeId = self::add_update(array(
                     'user_id' => $k,
                     'income' => $v['income']
