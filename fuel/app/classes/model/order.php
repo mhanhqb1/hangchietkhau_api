@@ -203,4 +203,68 @@ class Model_Order extends Model_Abstract {
             'products' => $products
         );
     }
+    
+    /**
+     * Get list
+     *
+     * @author AnhMH
+     * @param array $param Input data
+     * @return array|bool
+     */
+    public static function get_list($param)
+    {
+        // Init
+        $adminId = !empty($param['admin_id']) ? $param['admin_id'] : '';
+        
+        // Query
+        $query = DB::select(
+                self::$_table_name.'.*',
+                array('products.name', 'product_name'),
+                array('products.image', 'product_image')
+            )
+            ->from(self::$_table_name)
+            ->join('products', 'LEFT')
+            ->on('products.id', '=', self::$_table_name.'.product_id')
+        ;
+                        
+        // Filter
+        if (isset($param['type']) && $param['type'] != '') {
+            $types = explode(',', $param['type']);
+            $query->where(self::$_table_name.'.type', 'IN', $types);
+        }
+        if (!empty($param['product_id'])) {
+            $query->where(self::$_table_name.'.product_id', $param['product_id']);
+        }
+        
+        // Pagination
+        if (!empty($param['page']) && $param['limit']) {
+            $offset = ($param['page'] - 1) * $param['limit'];
+            $query->limit($param['limit'])->offset($offset);
+        }
+        
+        // Sort
+        if (!empty($param['sort'])) {
+            if (!self::checkSort($param['sort'])) {
+                self::errorParamInvalid('sort');
+                return false;
+            }
+
+            $sortExplode = explode('-', $param['sort']);
+            if ($sortExplode[0] == 'created') {
+                $sortExplode[0] = self::$_table_name . '.created';
+            }
+            $query->order_by($sortExplode[0], $sortExplode[1]);
+        } else {
+            $query->order_by(self::$_table_name . '.id', 'DESC');
+        }
+        
+        // Get data
+        $data = $query->execute()->as_array();
+        $total = !empty($data) ? DB::count_last_query(self::$slave_db) : 0;
+        
+        return array(
+            'total' => $total,
+            'data' => $data
+        );
+    }
 }
