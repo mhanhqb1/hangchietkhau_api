@@ -235,6 +235,9 @@ class Model_Order extends Model_Abstract {
         if (!empty($param['product_id'])) {
             $query->where(self::$_table_name.'.product_id', $param['product_id']);
         }
+        if (isset($param['status']) && $param['status'] != '') {
+            $query->where(self::$_table_name.'.status', $param['status']);
+        }
         
         // Pagination
         if (!empty($param['page']) && $param['limit']) {
