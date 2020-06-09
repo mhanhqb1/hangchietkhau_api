@@ -270,4 +270,28 @@ class Model_Order extends Model_Abstract {
             'data' => $data
         );
     }
+    
+    /**
+     * Update status
+     *
+     * @author AnhMH
+     * @param array $param Input data
+     * @return int|bool User ID or false if error
+     */
+    public static function update_status($param)
+    {
+        $ids = !empty($param['id']) ? $param['id'] : '';
+        $status = !empty($param['status']) ? $param['status'] : 0;
+        if (!is_array($ids)) {
+            $ids = explode(',', $ids);
+        }
+        foreach ($ids as $id) {
+            $self = self::find($id);
+            if (!empty($self)) {
+                $self->set('status', $status);
+                $self->save();
+            }
+        }
+        return true;
+    }
 }

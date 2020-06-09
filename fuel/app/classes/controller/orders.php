@@ -45,4 +45,11 @@ class Controller_Orders extends \Controller_App {
     public function action_all() {
         return \Bus\Orders_All::getInstance()->execute();
     }
+    
+    /**
+     * Update status
+     */
+    public function action_updatestatus() {
+        return \Bus\Orders_UpdateStatus::getInstance()->execute();
+    }
 }
