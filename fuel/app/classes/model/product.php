@@ -348,6 +348,7 @@ class Model_Product extends Model_Abstract {
                 'cates.*'
             )
             ->from('cates')
+            ->where('cates.type', 0)
             ->execute()
             ->as_array();
         }
